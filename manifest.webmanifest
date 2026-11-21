@@ -1,0 +1,27 @@
+{
+  "name": "دليل أكواد الأنشطة الضريبية",
+  "short_name": "أكواد الأنشطة",
+  "description": "البحث الفوري عن أكواد الأنشطة الضريبية المصرية (435 نشاط) مع دعم العمل بدون إنترنت",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#F7F5F0",
+  "theme_color": "#0E6B58",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
