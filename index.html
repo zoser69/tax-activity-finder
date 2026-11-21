@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0E6B58">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="أكواد الأنشطة">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <title>دليل أكواد الأنشطة الضريبية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F7F5F0;
+      --surface: #FFFFFF;
+      --ink: #1A1F24;
+      --ink-muted: #5E666E;
+      --rule: #E4E0D8;
+      --accent: #0E6B58;
+      --accent-soft: #E9F3F0;
+      --highlight: #FFF0C2;
+      --font-sans: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-shell {
+      max-width: 600px;
+      width: 100%;
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--surface);
+      border-left: 1px solid var(--rule);
+      border-right: 1px solid var(--rule);
+    }
+
+    @media (max-width: 600px) {
+      .app-shell {
+        border-inline: none;
+      }
+    }
+
+    .app-header {
+      padding: 20px 18px 12px;
+      background: var(--surface);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .app-title {
+      margin: 0;
+      font-size: clamp(1.25rem, 4.8vw, 1.55rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      font-style: normal;
+    }
+
+    .total-count {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .search-dock {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--surface);
+      padding: 8px 18px 12px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 14px;
+      width: 20px;
+      height: 20px;
+      color: var(--ink-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 44px 0 48px;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--bg);
+      border: 1.5px solid var(--rule);
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .search-input::placeholder {
+      color: var(--ink-muted);
+      font-weight: 400;
+    }
+
+    .search-input:focus {
+      background: var(--surface);
+      border-color: var(--accent);
+    }
+
+    .clear-btn {
+      position: absolute;
+      left: 4px;
+      width: 44px;
+      height: 44px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+
+    .clear-btn.visible {
+      display: flex;
+    }
+
+    .clear-btn:focus-visible,
+    .filter-chip:focus-visible,
+    .copy-btn:focus-visible,
+    .reset-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .filter-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .filter-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-chip {
+      flex-shrink: 0;
+      min-height: 44px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+      background: transparent;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .filter-chip[aria-pressed="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .results-meta {
+      padding: 12px 18px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8125rem;
+      color: var(--ink-muted);
+      border-bottom: 1px solid var(--rule);
+      background: var(--bg);
+    }
+
+    .match-mode-note {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .results-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .activity-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--surface);
+      transition: background-color 0.12s ease;
+    }
+
+    .activity-row:active {
+      background: var(--bg);
+    }
+
+    .activity-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .activity-common {
+      margin: 0 0 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.45;
+      word-wrap: break-word;
+    }
+
+    .activity-official {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--ink-muted);
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .activity-official-label {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      opacity: 0.85;
+    }
+
+    mark {
+      background: var(--highlight);
+      color: var(--ink);
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+
+    .copy-btn {
+      flex-shrink: 0;
+      min-width: 78px;
+      min-height: 44px;
+      padding: 6px 12px;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(14, 107, 88, 0.2);
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.1s ease, background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .copy-btn:active {
+      transform: scale(0.96);
+    }
+
+    .copy-btn.copied {
+      background: var(--accent);
+      color: #FFFFFF;
+      border-color: var(--accent);
+    }
+
+    .code-num {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      line-height: 1.1;
+    }
+
+    .copy-hint {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--ink-muted);
+    }
+
+    .empty-title {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .empty-desc {
+      margin: 0 0 20px;
+      font-size: 0.9rem;
+    }
+
+    .reset-btn {
+      min-height: 44px;
+      padding: 0 20px;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: max(20px, env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+      white-space: nowrap;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+    }
+
+    .install-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .install-btn.visible {
+      display: inline-flex;
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div class="header-row">
+        <h1 class="app-title">دليل أكواد الأنشطة الضريبية</h1>
+        <div style="display:flex;align-items:center;gap:8px;"><button class="install-btn" id="installBtn" type="button">تثبيت التطبيق</button><span class="total-count" id="totalBadge">435 كود</span></div>
+      </div>
+    </header>
+
+    <section class="search-dock" aria-label="البحث والتصفية">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <input
+          id="searchInput"
+          class="search-input"
+          type="search"
+          inputmode="search"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          placeholder="اكتب اسم النشاط أو الكود (مثل: مطعم، برمجة، 5610)..."
+          aria-label="ابحث باسم النشاط أو الكود"
+        >
+        <button id="clearBtn" class="clear-btn" type="button" aria-label="مسح البحث">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="filter-strip" role="group" aria-label="تصفية حسب القطاع">
+        <button class="filter-chip" type="button" data-cat="all" aria-pressed="true">الكل</button>
+        <button class="filter-chip" type="button" data-cat="food" aria-pressed="false">مطاعم وكافيهات</button>
+        <button class="filter-chip" type="button" data-cat="retail" aria-pressed="false">تجارة وتجزئة</button>
+        <button class="filter-chip" type="button" data-cat="services" aria-pressed="false">خدمات ومكاتب</button>
+        <button class="filter-chip" type="button" data-cat="construction" aria-pressed="false">مقاولات وعقارات</button>
+        <button class="filter-chip" type="button" data-cat="tech" aria-pressed="false">برمجة واتصالات</button>
+        <button class="filter-chip" type="button" data-cat="health" aria-pressed="false">صحة وتعليم</button>
+        <button class="filter-chip" type="button" data-cat="industry" aria-pressed="false">تصنيع وورش</button>
+        <button class="filter-chip" type="button" data-cat="transport" aria-pressed="false">نقل وشحن</button>
+        <button class="filter-chip" type="button" data-cat="agri" aria-pressed="false">زراعة وإنتاج</button>
+      </div>
+    </section>
+
+    <div class="results-meta" id="resultsMeta">
+      <span id="resultsCount">عرض 435 نشاط</span>
+      <span id="matchMode" class="match-mode-note"></span>
+    </div>
+
+    <ul class="results-list" id="resultsList" aria-live="polite">
+      <li class="empty-state" id="jsWarning">
+        <p class="empty-title">المتصفح منع تشغيل البحث (JavaScript)</p>
+        <p class="empty-desc">عند فتح الملف مباشرة من تيليجرام أو واتساب (رابط content://)، قد يمنع كروم تشغيل البرمجة.<br><strong>الحل:</strong> احفظ الملف في «التنزيلات» (Downloads) ثم افتحه من تطبيق «الملفات».</p>
+      </li>
+    </ul>
+
+    <div class="empty-state" id="emptyState" hidden>
+      <p class="empty-title">لا توجد نتائج مطابقة</p>
+      <p class="empty-desc">جرّب كلمة أبسط أو اختر «الكل» لعرض جميع الأنشطة.</p>
+      <button class="reset-btn" id="resetBtn" type="button">عرض جميع الأكواد</button>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./activities-1.js"></script>
+  <script src="./activities-2.js"></script>
+  <script>
+    window.onerror = function(msg) {
+      var el = document.getElementById('resultsList');
+      if (el) el.innerHTML = '<li class="empty-state"><p class="empty-title">حدث خطأ في المتصفح</p><p class="empty-desc">' + msg + '</p></li>';
+    };
+    const ACTIVITIES = [...(window.ACTIVITIES_PART1 || []), ...(window.ACTIVITIES_PART2 || [])];
+
+    const SYNONYMS = {
+      'قهوة': ['كافيه', 'كافتيريا', 'مشروبات', 'عصائر'],
+      'كوفي': ['كافيه', 'كافتيريا', 'مشروبات'],
+      'كافيه': ['كافتيريا', 'مشروبات', 'عصائر'],
+      'اكل': ['مطعم', 'وجبات', 'طعام', 'اغذية', 'ماكولات'],
+      'طعام': ['مطعم', 'وجبات', 'اغذية'],
+      'فراخ': ['دواجن', 'مطعم', 'وجبات'],
+      'لحوم': ['مواشي', 'لحم', 'مطعم'],
+      'عيش': ['مخبز', 'مخبوزات', 'فرن'],
+      'فرن': ['مخبز', 'مخبوزات'],
+      'سوبرماركت': ['سوبر', 'ماركت', 'بقالة', 'اغذية'],
+      'بقالة': ['سوبر', 'ماركت', 'اغذية'],
+      'دوا': ['صيدلية', 'ادوية', 'طبية', 'عقاقير'],
+      'صيدلية': ['عقاقير', 'طبية', 'تجميل'],
+      'دكتور': ['عيادة', 'طبية', 'مستشفى', 'اسنان'],
+      'عيادة': ['طبية', 'اسنان', 'مستشفى'],
+      'محامي': ['محاماة', 'قانونية', 'مكتب'],
+      'محاسب': ['محاسبة', 'مراجعة', 'ضرائب', 'دفاتر'],
+      'ضرايب': ['ضرائب', 'ضريبية', 'محاسبة'],
+      'مقاول': ['مقاولات', 'بناء', 'انشاءات', 'تشييد', 'تشطيب'],
+      'تشطيب': ['تشطيبات', 'سباكة', 'كهرباء', 'تكييف'],
+      'سباك': ['سباكة', 'تكييف'],
+      'كهربائي': ['كهرباء', 'تركيبات'],
+      'برمجة': ['برامج', 'كمبيوتر', 'حاسب', 'مواقع', 'تقنية'],
+      'موقع': ['مواقع', 'بوابات', 'استضافة', 'برامج'],
+      'تطبيق': ['برامج', 'كمبيوتر', 'برمجة'],
+      'سوفت': ['برامج', 'حاسب', 'كمبيوتر'],
+      'موبايل': ['موبايلات', 'اتصالات', 'كمبيوتر'],
+      'تليفون': ['موبايلات', 'اتصالات'],
+      'هدوم': ['ملابس', 'ازياء', 'اقمشة'],
+      'لبس': ['ملابس', 'ازياء'],
+      'جزم': ['احذية', 'جلدية'],
+      'شنط': ['حقائب', 'جلدية'],
+      'عربية': ['سيارات', 'مركبات', 'نقل'],
+      'سيارة': ['سيارات', 'مركبات', 'تاجير'],
+      'ميكانيكي': ['صيانة', 'اصلاح', 'سيارات', 'ورشة'],
+      'كاوتش': ['اطارات', 'مطاطية'],
+      'اونلاين': ['الكتروني', 'انترنت', 'متجر'],
+      'شحن': ['طرود', 'توصيل', 'نقل', 'بضائع'],
+      'دليفري': ['توصيل', 'طرود', 'مطاعم'],
+      'كوافير': ['حلاقة', 'تجميل', 'شعر', 'صالون'],
+      'حلاق': ['حلاقة', 'تجميل', 'صالون'],
+      'مطبعة': ['طباعة', 'نشر', 'دعاية'],
+      'اعلانات': ['دعاية', 'اعلان'],
+      'ماركتنج': ['دعاية', 'اعلان', 'تسويق', 'سوق'],
+      'سمسار': ['سمسرة', 'عقارات', 'تاجير'],
+      'شقق': ['عقارات', 'سكن', 'تسكين', 'فندق'],
+      'جيم': ['رياضي', 'ملاعب', 'نادي', 'تدريب'],
+      'مغسلة': ['غسيل', 'دراي', 'كلين', 'ملابس'],
+      'دراي': ['غسيل', 'كلين', 'مغسلة'],
+      'كورس': ['كورسات', 'تدريب', 'تعليم'],
+      'مدرسة': ['تعليم', 'روضة', 'اطفال'],
+      'حضانة': ['روضة', 'اطفال', 'تعليم'],
+      'مخزن': ['مخازن', 'مستودعات', 'تخزين'],
+      'نجار': ['نجارة', 'اخشاب', 'اثاث', 'موبيليا'],
+      'موبيليا': ['اثاث', 'نجارة'],
+      'دهب': ['مجوهرات', 'فلزات', 'نفيسة'],
+      'سياحة': ['سفر', 'رحلات', 'فندق'],
+      'تامين': ['تامين', 'سمسرة']
+    };
+
+    function normalizeAr(str) {
+      if (!str) return '';
+      return str
+        .toLowerCase()
+        .replace(/[\u064B-\u065F\u0670]/g, '')
+        .replace(/[أإآٱ]/g, 'ا')
+        .replace(/ى/g, 'ي')
+        .replace(/ة/g, 'ه')
+        .replace(/ؤ/g, 'و')
+        .replace(/ئ/g, 'ي')
+        .replace(/[^\u0621-\u064Aa-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function stripAl(word) {
+      return word.startsWith('ال') && word.length > 3 ? word.slice(2) : word;
+    }
+
+    function getCategory(codeStr) {
+      const c = parseInt(codeStr, 10);
+      if (c >= 111 && c <= 322) return 'agri';
+      if (c >= 5610 && c <= 5630) return 'food';
+      if (c >= 4510 && c <= 4799) return 'retail';
+      if (c >= 4100 && c <= 4390 || c === 6810 || c === 6820) return 'construction';
+      if (c >= 5820 && c <= 6399) return 'tech';
+      if (c >= 8510 && c <= 8890) return 'health';
+      if (c >= 1010 && c <= 3320 || c >= 9511 && c <= 9529) return 'industry';
+      if (c >= 4911 && c <= 5320) return 'transport';
+      return 'services';
+    }
+
+    function bigrams(str) {
+      const set = new Set();
+      const s = str.replace(/\s+/g, '');
+      for (let i = 0; i < s.length - 1; i++) {
+        set.add(s.slice(i, i + 2));
+      }
+      return set;
+    }
+
+    const INDEX = ACTIVITIES.map(item => {
+      const normN = normalizeAr(item.n);
+      const normO = normalizeAr(item.o);
+      const combined = normN + ' ' + normO;
+      const words = combined.split(' ').filter(Boolean).map(stripAl);
+      return {
+        ...item,
+        cat: getCategory(item.c),
+        normN,
+        normO,
+        combined,
+        words,
+        bg: bigrams(combined)
+      };
+    });
+
+    function diceSimilarity(bgA, bgB) {
+      if (bgA.size === 0 || bgB.size === 0) return 0;
+      let intersection = 0;
+      for (const b of bgA) {
+        if (bgB.has(b)) intersection++;
+      }
+      return (2 * intersection) / (bgA.size + bgB.size);
+    }
+
+    function levenshtein(a, b) {
+      if (Math.abs(a.length - b.length) > 3) return 99;
+      const dp = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        }
+      }
+      return dp[a.length][b.length];
+    }
+
+    function searchActivities(rawQuery, activeCat) {
+      const pool = activeCat === 'all' ? INDEX : INDEX.filter(it => it.cat === activeCat);
+      const q = normalizeAr(rawQuery);
+      if (!q) {
+        return { items: pool, mode: 'all', tokens: [] };
+      }
+
+      const rawTokens = q.split(' ').filter(Boolean);
+      const tokens = rawTokens.map(stripAl);
+
+      const expandedGroups = tokens.map(t => {
+        const group = new Set([t]);
+        for (const [k, vals] of Object.entries(SYNONYMS)) {
+          if (stripAl(normalizeAr(k)) === t) {
+            vals.forEach(s => group.add(stripAl(normalizeAr(s))));
+          }
+        }
+        return Array.from(group);
+      });
+
+      const directMatches = [];
+      for (const item of pool) {
+        let score = 0;
+
+        if (item.c === q) score += 1000;
+        else if (item.c.startsWith(q)) score += 600;
+        else if (item.c.includes(q)) score += 300;
+
+        if (item.normN.includes(q)) score += 250;
+        if (item.normO.includes(q)) score += 180;
+
+        let matchedGroups = 0;
+        for (const group of expandedGroups) {
+          let bestTokenScore = 0;
+          for (const gTok of group) {
+            const isPrimary = gTok === group[0];
+            const weight = isPrimary ? 1 : 0.65;
+            if (item.words.some(w => w === gTok)) {
+              bestTokenScore = Math.max(bestTokenScore, 70 * weight);
+            } else if (item.words.some(w => w.includes(gTok) || (gTok.length >= 3 && w.startsWith(gTok)))) {
+              bestTokenScore = Math.max(bestTokenScore, 45 * weight);
+            } else if (item.combined.includes(gTok)) {
+              bestTokenScore = Math.max(bestTokenScore, 30 * weight);
+            }
+          }
+          if (bestTokenScore > 0) {
+            matchedGroups++;
+            score += bestTokenScore;
+          }
+        }
+
+        if (matchedGroups === expandedGroups.length && expandedGroups.length > 1) {
+          score += 90;
+        }
+
+        if (score > 0) {
+          directMatches.push({ item, score });
+        }
+      }
+
+      if (directMatches.length > 0) {
+        directMatches.sort((a, b) => b.score - a.score);
+        return {
+          items: directMatches.map(d => d.item),
+          mode: 'direct',
+          tokens: rawTokens
+        };
+      }
+
+      const qBg = bigrams(q);
+      const fuzzyMatches = pool.map(item => {
+        let fScore = diceSimilarity(qBg, item.bg) * 100;
+        for (const t of tokens) {
+          if (t.length < 3) continue;
+          let minDist = 99;
+          for (const w of item.words) {
+            const d = levenshtein(t, w);
+            if (d < minDist) minDist = d;
+          }
+          if (minDist === 1) fScore += 45;
+          else if (minDist === 2) fScore += 22;
+        }
+        return { item, score: fScore };
+      })
+      .filter(m => m.score >= 16)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 15);
+
+      return {
+        items: fuzzyMatches.map(m => m.item),
+        mode: 'fuzzy',
+        tokens: rawTokens
+      };
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function highlightText(text, tokens) {
+      if (!tokens || tokens.length === 0) return escapeHtml(text);
+      const cleanTokens = tokens.filter(t => t.length >= 2);
+      if (cleanTokens.length === 0) return escapeHtml(text);
+
+      const patterns = cleanTokens.map(tok => {
+        return tok.split('').map(ch => {
+          if (ch === 'ا') return '[اأإآٱ]';
+          if (ch === 'ي') return '[يىئ]';
+          if (ch === 'ه') return '[هة]';
+          if (ch === 'و') return '[وؤ]';
+          return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }).join('[\\u064B-\\u065F\\u0670]*');
+      });
+
+      const regex = new RegExp('(' + patterns.join('|') + ')', 'gi');
+      const parts = text.split(regex);
+      return parts.map((part, idx) =>
+        idx % 2 === 1 ? '<mark>' + escapeHtml(part) + '</mark>' : escapeHtml(part)
+      ).join('');
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const resultsList = document.getElementById('resultsList');
+    const resultsCount = document.getElementById('resultsCount');
+    const matchMode = document.getElementById('matchMode');
+    const emptyState = document.getElementById('emptyState');
+    const resetBtn = document.getElementById('resetBtn');
+    const toastEl = document.getElementById('toast');
+
+    let activeCat = 'all';
+    let toastTimer = null;
+
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 1800);
+    }
+
+    async function copyCode(code, btn) {
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+
+      document.querySelectorAll('.copy-btn.copied').forEach(b => {
+        b.classList.remove('copied');
+        b.querySelector('.copy-hint').textContent = 'نسخ';
+      });
+
+      btn.classList.add('copied');
+      btn.querySelector('.copy-hint').textContent = 'تم';
+      showToast('تم نسخ الكود ' + code);
+
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.querySelector('.copy-hint').textContent = 'نسخ';
+      }, 1600);
+    }
+
+    function createRow(item, tokens) {
+      const li = document.createElement('li');
+      li.className = 'activity-row';
+
+      const info = document.createElement('div');
+      info.className = 'activity-info';
+
+      const pCommon = document.createElement('p');
+      pCommon.className = 'activity-common';
+      pCommon.innerHTML = highlightText(item.n, tokens);
+
+      const pOfficial = document.createElement('p');
+      pOfficial.className = 'activity-official';
+      pOfficial.innerHTML = '<span class="activity-official-label">الرسمي: </span>' + highlightText(item.o, tokens);
+
+      info.appendChild(pCommon);
+      info.appendChild(pOfficial);
+
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'نسخ كود النشاط ' + item.c);
+      btn.innerHTML = '<span class="code-num">' + escapeHtml(item.c) + '</span><span class="copy-hint">نسخ</span>';
+      btn.addEventListener('click', () => copyCode(item.c, btn));
+
+      li.appendChild(info);
+      li.appendChild(btn);
+      return li;
+    }
+
+    function render() {
+      const query = searchInput.value;
+      clearBtn.classList.toggle('visible', query.length > 0);
+
+      const { items, mode, tokens } = searchActivities(query, activeCat);
+
+      if (items.length === 0) {
+        resultsList.innerHTML = '';
+        emptyState.hidden = false;
+        resultsCount.textContent = '0 نتيجة';
+        matchMode.textContent = '';
+        return;
+      }
+
+      emptyState.hidden = true;
+      resultsCount.textContent = 'عرض ' + items.length + ' نشاط';
+      matchMode.textContent = mode === 'fuzzy' ? 'أقرب النتائج المطابقة' : '';
+
+      const frag = document.createDocumentFragment();
+      const displayItems = items.length > 150 && !query.trim() ? items.slice(0, 150) : items;
+
+      for (const item of displayItems) {
+        frag.appendChild(createRow(item, tokens));
+      }
+
+      resultsList.innerHTML = '';
+      resultsList.appendChild(frag);
+
+      if (displayItems.length < items.length) {
+        const moreLi = document.createElement('li');
+        moreLi.className = 'empty-state';
+        moreLi.style.padding = '20px 18px';
+        const showAllBtn = document.createElement('button');
+        showAllBtn.className = 'reset-btn';
+        showAllBtn.type = 'button';
+        showAllBtn.textContent = 'عرض باقي الأنشطة (' + (items.length - displayItems.length) + ')';
+        showAllBtn.addEventListener('click', () => {
+          moreLi.remove();
+          const restFrag = document.createDocumentFragment();
+          for (const item of items.slice(150)) {
+            restFrag.appendChild(createRow(item, tokens));
+          }
+          resultsList.appendChild(restFrag);
+        });
+        moreLi.appendChild(showAllBtn);
+        resultsList.appendChild(moreLi);
+      }
+    }
+
+    searchInput.addEventListener('input', render);
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchInput.focus();
+      render();
+    });
+
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        activeCat = chip.dataset.cat;
+        filterChips.forEach(c => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
+        render();
+      });
+    });
+
+    resetBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      activeCat = 'all';
+      filterChips.forEach(c => c.setAttribute('aria-pressed', c.dataset.cat === 'all' ? 'true' : 'false'));
+      render();
+    });
+
+
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (installBtn) installBtn.classList.add('visible');
+    });
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.classList.remove('visible');
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      if (installBtn) installBtn.classList.remove('visible');
+      deferredPrompt = null;
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
