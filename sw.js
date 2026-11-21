@@ -2,6 +2,8 @@ const CACHE_NAME = 'tax-activity-finder-v1';
 const ASSETS = [
   './',
   './index.html',
+  './activities-1.js',
+  './activities-2.js',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'
